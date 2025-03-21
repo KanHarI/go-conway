@@ -19,7 +19,7 @@ export default function GoGameOfLife() {
   // Add state for Game of Life notification
   const [gameOfLifeTriggered, setGameOfLifeTriggered] = useState(false);
   // Add state for game mode (dice-based or user-controlled)
-  const [gameMode, setGameMode] = useState("dice"); // "dice" or "user"
+  const [gameMode, setGameMode] = useState("user"); // "dice" or "user"
 
   // Step 2: Initialize board after board size is chosen
   useEffect(() => {
@@ -59,7 +59,7 @@ export default function GoGameOfLife() {
     setGameOver(false);
     setDiceRollValue(null);
     setGameOfLifeTriggered(false);
-    setGameMode("dice"); // Reset game mode to default
+    setGameMode("user"); // Reset game mode to default
   }
 
   // Step 3: Handle cell click to place stone
