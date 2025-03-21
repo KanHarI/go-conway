@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Generate Social Preview</title>
+  <style>
+    body { 
+      margin: 0; 
+      display: flex; 
+      justify-content: center; 
+      align-items: center; 
+      height: 100vh; 
+      background: #f0f0f0;
+    }
+    canvas { 
+      border: 1px solid #ccc; 
+    }
+  </style>
+</head>
+<body>
+  <canvas id="preview" width="1200" height="630"></canvas>
+  <script>
+    // This script generates a social preview image for the Go Game of Life
+    const canvas = document.getElementById('preview');
+    const ctx = canvas.getContext('2d');
+    
+    // Set background
+    ctx.fillStyle = '#deb887'; // Wooden background color
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    
+    // Draw a simple Go board
+    const boardSize = 9;
+    const cellSize = 60;
+    const boardWidth = cellSize * (boardSize - 1);
+    const boardOffsetX = (canvas.width - boardWidth) / 2;
+    const boardOffsetY = (canvas.height - boardWidth) / 2;
+    
+    // Draw lines
+    ctx.strokeStyle = 'black';
+    ctx.lineWidth = 2;
+    
+    // Horizontal lines
+    for (let i = 0; i < boardSize; i++) {
+      ctx.beginPath();
+      ctx.moveTo(boardOffsetX, boardOffsetY + i * cellSize);
+      ctx.lineTo(boardOffsetX + boardWidth, boardOffsetY + i * cellSize);
+      ctx.stroke();
+    }
+    
+    // Vertical lines
+    for (let i = 0; i < boardSize; i++) {
+      ctx.beginPath();
+      ctx.moveTo(boardOffsetX + i * cellSize, boardOffsetY);
+      ctx.lineTo(boardOffsetX + i * cellSize, boardOffsetY + boardWidth);
+      ctx.stroke();
+    }
+    
+    // Draw some stones on the board
+    const stones = [
+      { x: 2, y: 2, color: 'black' },
+      { x: 2, y: 3, color: 'white' },
+      { x: 3, y: 2, color: 'white' },
+      { x: 4, y: 2, color: 'black' },
+      { x: 5, y: 5, color: 'black' },
+      { x: 6, y: 5, color: 'white' },
+      { x: 5, y: 6, color: 'white' },
+      { x: 6, y: 6, color: 'black' }
+    ];
+    
+    stones.forEach(stone => {
+      ctx.beginPath();
+      ctx.arc(
+        boardOffsetX + stone.x * cellSize, 
+        boardOffsetY + stone.y * cellSize, 
+        cellSize / 2 - 2, 
+        0, 
+        Math.PI * 2
+      );
+      ctx.fillStyle = stone.color;
+      ctx.fill();
+      if (stone.color === 'white') {
+        ctx.strokeStyle = 'black';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+      }
+    });
+    
+    // Add title
+    ctx.fillStyle = '#333';
+    ctx.font = 'bold 80px Arial';
+    ctx.textAlign = 'center';
+    ctx.fillText('Go Game of Life', canvas.width / 2, 120);
+    
+    // Add subtitle
+    ctx.font = '40px Arial';
+    ctx.fillText('Conway\'s Game of Life meets the ancient game of Go', canvas.width / 2, canvas.height - 80);
+    
+    // Right-click on the canvas to save the image
+    console.log('Right-click on the image and select "Save Image As..." to download the social preview');
+  </script>
+</body>
+</html> 
