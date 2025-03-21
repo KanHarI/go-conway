@@ -82,10 +82,112 @@ export default function GoGameOfLife() {
         }
       })
     );
-    setBoard(newBoard);
+    
+    // Apply Go capturing rules before checking for suicide
+    const [boardAfterCapture, capturedStones] = applyCaptureRules(newBoard, row, col);
+    
+    // Check for suicide rule (only if no captures were made)
+    if (capturedStones === 0) {
+      const group = [];
+      const visited = Array(boardSize).fill().map(() => Array(boardSize).fill(false));
+      const hasLiberties = checkLiberties(boardAfterCapture, row, col, currentPlayer, visited, group);
+      
+      // If suicide move and not capturing any stones, don't allow
+      if (!hasLiberties) {
+        // Illegal move - cannot place stone here (suicide)
+        return;
+      }
+    }
+    
+    // Update the board with captures applied
+    setBoard(boardAfterCapture);
+    
+    // Update scores based on captured stones
+    if (currentPlayer === "black") {
+      setBlackScore(prev => prev + capturedStones);
+    } else {
+      setWhiteScore(prev => prev + capturedStones);
+    }
 
     // Now handle end-of-turn logic
-    endTurn(newBoard);
+    endTurn(boardAfterCapture);
+  }
+  
+  // Apply Go capturing rules
+  function applyCaptureRules(boardState, placedRow, placedCol) {
+    const opponentColor = currentPlayer === "black" ? "white" : "black";
+    let capturedCount = 0;
+    const boardCopy = boardState.map(row => [...row]);
+    
+    // Check adjacent positions for opponent groups to capture
+    const directions = [[-1, 0], [1, 0], [0, -1], [0, 1]]; // Four directions: up, down, left, right
+    
+    for (const [dr, dc] of directions) {
+      const adjRow = placedRow + dr;
+      const adjCol = placedCol + dc;
+      
+      // Skip if out of bounds
+      if (adjRow < 0 || adjRow >= boardSize || adjCol < 0 || adjCol >= boardSize) {
+        continue;
+      }
+      
+      // Skip if not an opponent stone
+      if (boardCopy[adjRow][adjCol] !== opponentColor) {
+        continue;
+      }
+      
+      // Check if this group has liberties
+      const group = [];
+      const visited = Array(boardSize).fill().map(() => Array(boardSize).fill(false));
+      const hasLiberties = checkLiberties(boardCopy, adjRow, adjCol, opponentColor, visited, group);
+      
+      // If no liberties, capture the group
+      if (!hasLiberties) {
+        for (const [r, c] of group) {
+          boardCopy[r][c] = "";
+          capturedCount++;
+        }
+      }
+    }
+    
+    return [boardCopy, capturedCount];
+  }
+  
+  // Check if a group has liberties (empty adjacent points)
+  function checkLiberties(boardState, row, col, color, visited, group) {
+    // Out of bounds
+    if (row < 0 || row >= boardSize || col < 0 || col >= boardSize) {
+      return false;
+    }
+    
+    // Already visited
+    if (visited[row][col]) {
+      return false;
+    }
+    
+    // Mark as visited
+    visited[row][col] = true;
+    
+    // If empty, this group has a liberty
+    if (boardState[row][col] === "") {
+      return true;
+    }
+    
+    // If not our color, not part of the group
+    if (boardState[row][col] !== color) {
+      return false;
+    }
+    
+    // Add to group
+    group.push([row, col]);
+    
+    // Check in all four directions
+    const directions = [[-1, 0], [1, 0], [0, -1], [0, 1]];
+    
+    // If any direction has a liberty, the group has liberties
+    return directions.some(([dr, dc]) => 
+      checkLiberties(boardState, row + dr, col + dc, color, visited, group)
+    );
   }
 
   // Step 4: End turn logic
