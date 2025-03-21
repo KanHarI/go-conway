@@ -18,6 +18,8 @@ export default function GoGameOfLife() {
   const [diceFaces, setDiceFaces] = useState(6);
   // Add state for Game of Life notification
   const [gameOfLifeTriggered, setGameOfLifeTriggered] = useState(false);
+  // Add state for game mode (dice-based or user-controlled)
+  const [gameMode, setGameMode] = useState("dice"); // "dice" or "user"
 
   // Step 2: Initialize board after board size is chosen
   useEffect(() => {
@@ -57,6 +59,7 @@ export default function GoGameOfLife() {
     setGameOver(false);
     setDiceRollValue(null);
     setGameOfLifeTriggered(false);
+    setGameMode("dice"); // Reset game mode to default
   }
 
   // Step 3: Handle cell click to place stone
@@ -87,18 +90,24 @@ export default function GoGameOfLife() {
 
   // Step 4: End turn logic
   function endTurn(updatedBoard) {
-    // Roll dice
-    const diceRoll = Math.floor(Math.random() * diceFaces) + 1;
-    setDiceRollValue(diceRoll);
-
     let conwayBoard = updatedBoard;
+    
+    // Only roll dice in dice mode
+    if (gameMode === "dice") {
+      // Roll dice
+      const diceRoll = Math.floor(Math.random() * diceFaces) + 1;
+      setDiceRollValue(diceRoll);
 
-    // If we rolled a 1 (changed from 6), run one iteration of Conway's Game of Life
-    if (diceRoll === 1) {
-      conwayBoard = runConway(updatedBoard);
-      setBoard(conwayBoard);
-      // Set the Game of Life notification
-      setGameOfLifeTriggered(true);
+      // If we rolled a 1, run one iteration of Conway's Game of Life
+      if (diceRoll === 1) {
+        conwayBoard = runConway(updatedBoard);
+        setBoard(conwayBoard);
+        // Set the Game of Life notification
+        setGameOfLifeTriggered(true);
+      }
+    } else {
+      // In user-controlled mode, we don't roll dice
+      setDiceRollValue(null);
     }
 
     // Increment turn count, switch player, check if game over
@@ -112,6 +121,15 @@ export default function GoGameOfLife() {
       setTurn(newTurn);
       setCurrentPlayer(nextPlayerColor(currentPlayer));
     }
+  }
+
+  // Handle manual Game of Life iteration
+  function handleManualGameOfLife() {
+    if (gameOver) return;
+    
+    const conwayBoard = runConway(board);
+    setBoard(conwayBoard);
+    setGameOfLifeTriggered(true);
   }
 
   // Step 5: Implement Conway's Game of Life logic
@@ -314,6 +332,37 @@ export default function GoGameOfLife() {
               <Button onClick={() => setBoardSize(13)}>13x13</Button>
               <Button onClick={() => setBoardSize(19)}>19x19</Button>
             </div>
+            
+            <div className="mt-4">Game Mode:</div>
+            <div className="flex gap-2 mt-2">
+              <Button 
+                onClick={() => setGameMode("dice")} 
+                className={gameMode === "dice" ? "bg-blue-700" : ""}
+              >
+                Dice-based Mode
+              </Button>
+              <Button 
+                onClick={() => setGameMode("user")} 
+                className={gameMode === "user" ? "bg-blue-700" : ""}
+              >
+                User-controlled Mode
+              </Button>
+            </div>
+            
+            {gameMode === "dice" && (
+              <>
+                <div className="mt-4">Select Number of Dice Faces:</div>
+                <input
+                  type="number"
+                  min={2}
+                  max={20}
+                  className="border p-1 mt-2 w-20"
+                  value={diceFaces}
+                  onChange={(e) => setDiceFaces(parseInt(e.target.value) || 6)}
+                />
+              </>
+            )}
+            
             <div className="mt-4">Select Max Turns:</div>
             <input
               type="number"
@@ -321,15 +370,6 @@ export default function GoGameOfLife() {
               className="border p-1 mt-2 w-20"
               value={maxTurns}
               onChange={(e) => setMaxTurns(parseInt(e.target.value) || 40)}
-            />
-            <div className="mt-4">Select Number of Dice Faces:</div>
-            <input
-              type="number"
-              min={2}
-              max={20}
-              className="border p-1 mt-2 w-20"
-              value={diceFaces}
-              onChange={(e) => setDiceFaces(parseInt(e.target.value) || 6)}
             />
           </CardContent>
         </Card>
@@ -340,11 +380,21 @@ export default function GoGameOfLife() {
           <div className="mb-4 flex flex-col items-center">
             <div className="mb-2">Turn: {turn} / {maxTurns}</div>
             <div className="mb-2">Current Player: {currentPlayer.toUpperCase()}</div>
-            <div>Dice Roll: {diceRollValue !== null ? diceRollValue : "-"} (1 triggers Game of Life)</div>
+            
+            {gameMode === "dice" ? (
+              <div>Dice Roll: {diceRollValue !== null ? diceRollValue : "-"} (1 triggers Game of Life)</div>
+            ) : (
+              <Button 
+                onClick={handleManualGameOfLife} 
+                className="mt-2 bg-green-600 hover:bg-green-700"
+              >
+                Run Game of Life Iteration
+              </Button>
+            )}
           </div>
           {renderBoard()}
           
-          {/* Game of Life notification - moved below the board */}
+          {/* Game of Life notification - below the board */}
           <div className="h-12 flex items-center justify-center mt-2">
             {gameOfLifeTriggered && (
               <div className="p-2 bg-yellow-100 text-yellow-800 font-bold rounded-md animate-pulse">
