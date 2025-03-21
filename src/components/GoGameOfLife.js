@@ -134,9 +134,14 @@ export default function GoGameOfLife() {
 
   // Step 5: Implement Conway's Game of Life logic
   function runConway(currentBoard) {
-    // We'll create a copy. We'll also track removed stones.
+    // We'll create a copy of the board
     const newBoard = currentBoard.map((row) => [...row]);
-
+    
+    // First, determine all changes based on current state
+    const removals = [];
+    const additions = [];
+    
+    // Scan the board for changes (but don't apply them yet)
     for (let r = 0; r < boardSize; r++) {
       for (let c = 0; c < boardSize; c++) {
         const neighbors = getNeighbors(currentBoard, r, c);
@@ -146,13 +151,8 @@ export default function GoGameOfLife() {
         if (cellColor !== "") {
           // Stone is present: standard life rules
           if (stoneCount < 2 || stoneCount > 3) {
-            // remove stone => update scores
-            newBoard[r][c] = "";
-            if (cellColor === "black") {
-              setBlackScore((prev) => prev - 1);
-            } else {
-              setWhiteScore((prev) => prev - 1);
-            }
+            // Queue for removal
+            removals.push({ r, c, color: cellColor });
           }
         } else {
           // Empty cell: a new stone is placed if exactly 3 neighbors
@@ -170,11 +170,28 @@ export default function GoGameOfLife() {
             }
 
             if (newColor !== "") {
-              newBoard[r][c] = newColor;
+              // Queue for addition
+              additions.push({ r, c, color: newColor });
             }
           }
         }
       }
+    }
+    
+    // Now apply all the changes
+    // First, remove stones
+    for (const { r, c, color } of removals) {
+      newBoard[r][c] = "";
+      if (color === "black") {
+        setBlackScore((prev) => prev - 1);
+      } else {
+        setWhiteScore((prev) => prev - 1);
+      }
+    }
+    
+    // Then, add new stones
+    for (const { r, c, color } of additions) {
+      newBoard[r][c] = color;
     }
 
     return newBoard;
