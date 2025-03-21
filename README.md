@@ -1,70 +1,93 @@
-# Getting Started with Create React App
+# Go Game of Life
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A unique board game that combines the traditional Go board game with Conway's Game of Life cellular automaton.
+
+## Description
+
+Go Game of Life is a turn-based strategy game played on a Go board (9x9, 13x13, or 19x19 grid). Players take turns placing black and white stones on the board intersections. The twist? At the end of each turn, a dice is rolled, and if a 1 is rolled, Conway's Game of Life rules are applied to the board, potentially changing the game state dramatically!
+
+## Game Rules
+
+1. **Setup**: 
+   - Choose a board size (9x9, 13x13, or 19x19)
+   - Set the maximum number of turns (default: 40)
+   - Select the number of dice faces (2-20)
+
+2. **Gameplay**:
+   - Players take turns placing stones on empty intersections
+   - Black goes first, followed by White
+   - After each stone placement, a dice is rolled (1 to N, based on chosen dice faces)
+   - If a 1 is rolled, Conway's Game of Life rules are applied to the board:
+     - Stones with fewer than 2 or more than 3 neighboring stones are removed
+     - Empty intersections with exactly 3 neighboring stones gain a new stone (color determined by majority)
+
+3. **Scoring**:
+   - Players earn points for each of their stones on the board
+   - When stones are removed during Conway's Game of Life, scores are adjusted
+
+4. **End Game**:
+   - The game ends when the maximum number of turns is reached
+   - The player with the highest score wins
+
+## Installation
+
+```bash
+# Clone the repository
+git clone https://github.com/yourusername/go-conway.git
+cd go-conway
+
+# Install dependencies
+npm install
+```
+
+## Running the Game
+
+```bash
+# Start the development server
+npm start
+```
+
+Then open [http://localhost:3000](http://localhost:3000) in your browser to play the game.
+
+## Technologies Used
+
+- React
+- JavaScript
+- Tailwind CSS
+
+## Strategy Tips
+
+- Plan your stone placements carefully, considering the possibility of Conway's Game of Life being triggered
+- Try to create stable formations that will survive Conway's Game of Life rules
+- Pay attention to the board edges, as they affect neighbor counts
+- Consider creating patterns that will generate new stones of your color if Conway's Game of Life is triggered
 
 ## Available Scripts
 
-In the project directory, you can run:
-
 ### `npm start`
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
-
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+Runs the app in the development mode.
 
 ### `npm test`
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Launches the test runner in the interactive watch mode.
 
 ### `npm run build`
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+Builds the app for production to the `build` folder.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## Future Enhancements
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+- Multiplayer support
+- Game history tracking
+- Additional game rule variations
+- Custom board themes
 
-### `npm run eject`
+## License
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+MIT
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## Acknowledgements
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+- Inspired by the classic board game Go and Conway's Game of Life
+- Built with React and Tailwind CSS

@@ -7,13 +7,17 @@ export default function GoGameOfLife() {
   const [boardSize, setBoardSize] = useState(0); // 0 means not chosen yet
   const [board, setBoard] = useState([]);
   const [turn, setTurn] = useState(1);
-  const [maxTurns, setMaxTurns] = useState(10); // user selectable
+  const [maxTurns, setMaxTurns] = useState(40); // changed default from 10 to 40
   const [currentPlayer, setCurrentPlayer] = useState("black");
   const [blackScore, setBlackScore] = useState(0);
   const [whiteScore, setWhiteScore] = useState(0);
   const [gameOver, setGameOver] = useState(false);
   // We'll track the dice roll each turn
   const [diceRollValue, setDiceRollValue] = useState(null);
+  // Add state for number of dice faces
+  const [diceFaces, setDiceFaces] = useState(6);
+  // Add state for Game of Life notification
+  const [gameOfLifeTriggered, setGameOfLifeTriggered] = useState(false);
 
   // Step 2: Initialize board after board size is chosen
   useEffect(() => {
@@ -25,6 +29,17 @@ export default function GoGameOfLife() {
       setBoard(newBoard);
     }
   }, [boardSize]);
+
+  // Effect to clear Game of Life notification after 3 seconds
+  useEffect(() => {
+    if (gameOfLifeTriggered) {
+      const timer = setTimeout(() => {
+        setGameOfLifeTriggered(false);
+      }, 3000);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [gameOfLifeTriggered]);
 
   // Helper: toggle players
   function nextPlayerColor(current) {
@@ -41,6 +56,7 @@ export default function GoGameOfLife() {
     setWhiteScore(0);
     setGameOver(false);
     setDiceRollValue(null);
+    setGameOfLifeTriggered(false);
   }
 
   // Step 3: Handle cell click to place stone
@@ -49,6 +65,9 @@ export default function GoGameOfLife() {
 
     // If the cell is already taken, do nothing
     if (board[row][col] !== "") return;
+
+    // Clear any previous Game of Life notification
+    setGameOfLifeTriggered(false);
 
     // Place the stone
     const newBoard = board.map((r, rowIndex) =>
@@ -69,15 +88,17 @@ export default function GoGameOfLife() {
   // Step 4: End turn logic
   function endTurn(updatedBoard) {
     // Roll dice
-    const diceRoll = Math.floor(Math.random() * 6) + 1;
+    const diceRoll = Math.floor(Math.random() * diceFaces) + 1;
     setDiceRollValue(diceRoll);
 
     let conwayBoard = updatedBoard;
 
-    // If we rolled a 6, run one iteration of Conway's Game of Life
-    if (diceRoll === 6) {
+    // If we rolled a 1 (changed from 6), run one iteration of Conway's Game of Life
+    if (diceRoll === 1) {
       conwayBoard = runConway(updatedBoard);
       setBoard(conwayBoard);
+      // Set the Game of Life notification
+      setGameOfLifeTriggered(true);
     }
 
     // Increment turn count, switch player, check if game over
@@ -299,7 +320,16 @@ export default function GoGameOfLife() {
               min={1}
               className="border p-1 mt-2 w-20"
               value={maxTurns}
-              onChange={(e) => setMaxTurns(parseInt(e.target.value) || 10)}
+              onChange={(e) => setMaxTurns(parseInt(e.target.value) || 40)}
+            />
+            <div className="mt-4">Select Number of Dice Faces:</div>
+            <input
+              type="number"
+              min={2}
+              max={20}
+              className="border p-1 mt-2 w-20"
+              value={diceFaces}
+              onChange={(e) => setDiceFaces(parseInt(e.target.value) || 6)}
             />
           </CardContent>
         </Card>
@@ -310,10 +340,20 @@ export default function GoGameOfLife() {
           <div className="mb-4 flex flex-col items-center">
             <div className="mb-2">Turn: {turn} / {maxTurns}</div>
             <div className="mb-2">Current Player: {currentPlayer.toUpperCase()}</div>
-            <div>Dice Roll: {diceRollValue !== null ? diceRollValue : "-"}</div>
+            <div>Dice Roll: {diceRollValue !== null ? diceRollValue : "-"} (1 triggers Game of Life)</div>
           </div>
           {renderBoard()}
-          <div className="mt-4 space-y-2">
+          
+          {/* Game of Life notification - moved below the board */}
+          <div className="h-12 flex items-center justify-center mt-2">
+            {gameOfLifeTriggered && (
+              <div className="p-2 bg-yellow-100 text-yellow-800 font-bold rounded-md animate-pulse">
+                Conway's Game of Life iteration executed!
+              </div>
+            )}
+          </div>
+          
+          <div className="mt-2 space-y-2">
             <div>Black Score: {blackScore}</div>
             <div>White Score: {whiteScore}</div>
           </div>
