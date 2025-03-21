@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "/go-conway/static/css/main.68261fbb.css",
-    "main.js": "/go-conway/static/js/main.f29d6901.js",
+    "main.css": "/go-conway/static/css/main.5debead3.css",
+    "main.js": "/go-conway/static/js/main.862f5a39.js",
     "static/js/453.b310088f.chunk.js": "/go-conway/static/js/453.b310088f.chunk.js",
     "index.html": "/go-conway/index.html",
-    "main.68261fbb.css.map": "/go-conway/static/css/main.68261fbb.css.map",
-    "main.f29d6901.js.map": "/go-conway/static/js/main.f29d6901.js.map",
+    "main.5debead3.css.map": "/go-conway/static/css/main.5debead3.css.map",
+    "main.862f5a39.js.map": "/go-conway/static/js/main.862f5a39.js.map",
     "453.b310088f.chunk.js.map": "/go-conway/static/js/453.b310088f.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.68261fbb.css",
-    "static/js/main.f29d6901.js"
+    "static/css/main.5debead3.css",
+    "static/js/main.862f5a39.js"
   ]
 }
